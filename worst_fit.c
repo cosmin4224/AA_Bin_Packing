@@ -70,5 +70,8 @@ int main(int argc, char **argv) {
         fprintf(output, "\n");
     }
 
+    fclose(input);
+    fclose(output);
+
     return 0;
 }

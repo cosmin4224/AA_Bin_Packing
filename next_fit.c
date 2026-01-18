@@ -63,5 +63,8 @@ int main(int argc, char **argv) {
     fseek(output, 0, SEEK_SET);
     fprintf(output, "%d\n", k);
 
+    fclose(input);
+    fclose(output);
+
     return 0;
 }
