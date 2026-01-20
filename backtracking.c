@@ -3,6 +3,10 @@
 #include <stdbool.h>
 #include <string.h>
 
+int decreasing_sort(const void *a, const void *b) {
+    return *(int *)b - *(int *)a;
+}
+
 bool check_for_overflow(int *items, int items_placed, int c, int **bins, int current_bins, int *bins_capacity) {
     // when creating a new bin, it is guaranteed that it doesn't overflow
     int current_bin_capacity;
@@ -96,6 +100,9 @@ int main(int argc, char **argv) {
 
         best_sol[i] = malloc(sizeof(int) * n);
     }
+
+    // sort items
+    qsort(items, n, sizeof(int), decreasing_sort);
 
     backtracking(items, 0, n, c, bins, 0, bins_capacity, best_sol, &max_bins);
 
