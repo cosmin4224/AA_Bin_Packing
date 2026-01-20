@@ -21,17 +21,20 @@ bool check_for_overflow(int *items, int items_placed, int c, int **bins, int cur
 
 void backtracking(int *items, int items_placed, int n, int c, int **bins, int current_bins, int *bins_capacity, int **best_sol, int *max_bins) {
     if (items_placed == n) {
-        printf("max_bins: %d\n", *max_bins);
+        // printf("max_bins: %d\n", *max_bins);
         if (current_bins < *max_bins) {
             // new best sol
             *max_bins = current_bins;
-            memcpy(best_sol, bins, sizeof(int *) * n);
+            for (int bin = 0; bin < current_bins; bin++) {
+                memcpy(best_sol[bin], bins[bin], sizeof(int) * n);
+            }
         }
     } else {
         // for each bin, add current value
         // if state is valid, backtracking(...)
         // !!! then remove value from bin
         if (current_bins < *max_bins) {
+            // printf("current bins: %d\n", current_bins);
             for (int bin = 0; bin <= current_bins; bin++) {
                 // add index, not item itself
                 bins[bin][bins_capacity[bin]] = items_placed;
@@ -42,8 +45,7 @@ void backtracking(int *items, int items_placed, int n, int c, int **bins, int cu
                         backtracking(items, items_placed + 1, n, c, bins, current_bins, bins_capacity, best_sol, max_bins);
                     }
                     else {
-                        int added_bin = current_bins + 1;
-                        backtracking(items, items_placed + 1, n, c, bins, added_bin, bins_capacity, best_sol, max_bins);
+                        backtracking(items, items_placed + 1, n, c, bins, current_bins + 1, bins_capacity, best_sol, max_bins);
                     }
                 }
                 // remove added item
@@ -83,13 +85,13 @@ int main(int argc, char **argv) {
         max_bins = n;
     }
 
-    int **bins = malloc(sizeof(int *) * (n + 1));
-    int *bins_capacity = malloc(sizeof(int) * (n + 1));
+    int **bins = malloc(sizeof(int *) * n);
+    int *bins_capacity = malloc(sizeof(int) * n);
 
     int **best_sol = malloc(sizeof(int *) * n);
 
     for (int i = 0; i < n; i++) {
-        bins[i] = malloc(sizeof(int) * n);
+        bins[i] = calloc(n, sizeof(int));
         bins_capacity[i] = 0;
 
         best_sol[i] = malloc(sizeof(int) * n);
@@ -103,12 +105,11 @@ int main(int argc, char **argv) {
 
     for (int bin = 0; bin < max_bins; bin++) {
         fprintf(output, "%d ", best_sol[bin][0]);
-
-        // taking into consideration the restriction that
-        // all bins must be sorted, we know that index 0
-        // is in the first slot of the bin
-        // we also know that each bin has at least 1 item
-        while (best_sol[bin][item] != 0 || item < n) {
+        // we know that each bin has at least 1 item
+        // so we print the first item outside of the loop,
+        // allowing us to use the condition index != 0 to
+        // stop printing
+        while (best_sol[bin][item] != 0 && item < n) {
             fprintf(output, "%d ", best_sol[bin][item]);
             item++;
         }
